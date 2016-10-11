@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ViewConfig>
+  <Arguments/>
+  <Context/>
+  <Model/>
+  <View>
+    <DataSet id="cookiesDataSet">
+      <Property name="dataProvider">CookieManagePR#selectAllCookies</Property>
+    </DataSet>
+    <UpdateAction id="updatecookieAction">
+      <Property name="dataResolver">CookieManagePR#updateCookie</Property>
+      <Property name="executingMessage">正在保存！</Property>
+      <Property name="successMessage">保存成功！</Property>
+      <Property name="hotkey">ctrl+s</Property>
+      <UpdateItem>
+        <Property name="dataSet">cookiesDataSet</Property>
+      </UpdateItem>
+    </UpdateAction>
+    <UpdateAction id="updateCookieSeleniumAction">
+      <Property name="dataResolver">CookieManagePR#updateCookieSelenium</Property>
+    </UpdateAction>
+    <Container layoutConstraint="padding:10">
+      <HtmlContainer layout="hbox">
+        <Button>
+          <Property name="caption">保存</Property>
+          <Property name="icon">url(>skin>common/icons.gif) -140px -20px</Property>
+          <Property name="action">updatecookieAction</Property>
+          <Property name="tip">使用Ctrl+s快捷键保存</Property>
+        </Button>
+      </HtmlContainer>
+      <DataGrid id="cookieDataGrid">
+        <ClientEvent name="onCreate">&#xD;
+var OperationCellRenderer = $extend(dorado.widget.grid.SubControlCellRenderer,&#xD;
+		{&#xD;
+			createSubControl : function(arg) {&#xD;
+				if (arg.data.rowType)&#xD;
+					return null;&#xD;
+&#xD;
+				return new dorado.widget.Button({&#xD;
+					caption : &quot;获取cookie&quot;,&#xD;
+					onClick : function(self) {&#xD;
+						&#xD;
+						var entity = arg.data;&#xD;
+				        //entity.remove();&#xD;
+						view.get(&quot;#updateCookieSeleniumAction&quot;).set(&quot;parameter&quot;,entity).execute(function(data){&#xD;
+							businessDataSet.flushAsync();&#xD;
+						});&#xD;
+						//dorado.MessageBox.alert(&quot;来自&quot;+entity.get(&quot;lastName&quot;)+entity.get(&quot;firstName&quot;)+&quot;的问候！&quot;);&#xD;
+					}&#xD;
+				});&#xD;
+			},&#xD;
+&#xD;
+			refreshSubControl : function(button, arg) {&#xD;
+				&#xD;
+			}&#xD;
+		});&#xD;
+self.set(&quot;#operation.renderer&quot;, new OperationCellRenderer());</ClientEvent>
+        <Property name="dataSet">cookiesDataSet</Property>
+        <Property name="selectionMode">singleRow</Property>
+        <Property name="autoCreateColumns">true</Property>
+        <Property name="readOnly">false</Property>
+        <Property name="dynaRowHeight">true</Property>
+        <DataColumn>
+          <Property name="name">shopCode</Property>
+          <Property name="property">shopCode</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="width">100</Property>
+          <Property name="caption">店铺编码</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="property">shopName</Property>
+          <Property name="width">200</Property>
+          <Property name="caption">店铺名称</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="name">shopName</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">userName</Property>
+          <Property name="property">userName</Property>
+          <Property name="width">200</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">登录用户名</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">businessCode</Property>
+          <Property name="property">businessCode</Property>
+          <Property name="width">100</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">业务编码</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">describe</Property>
+          <Property name="property">describe</Property>
+          <Property name="width">100</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">业务描述</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="caption">cookie</Property>
+          <Property name="name">cookie</Property>
+          <Property name="property">cookie</Property>
+          <Property name="width">500</Property>
+          <Property name="editable">true</Property>
+          <Property name="readOnly">false</Property>
+          <Property name="editorType">TextArea</Property>
+          <Property name="wrappable">true</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">cookieUrl</Property>
+          <Property name="property">cookieUrl</Property>
+          <Property name="caption">cookieUrl</Property>
+          <Property name="editorType">TextArea</Property>
+          <Property name="wrappable">true</Property>
+          <Property name="width">500</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <ClientEvent name="onRenderCell">if(arg.data.get(&quot;status&quot;)==0){&#xD;
+	arg.dom.innerText=&quot;失效&quot;;&#xD;
+}else{&#xD;
+	arg.dom.innerText=&quot;有效&quot;;&#xD;
+}&#xD;
+</ClientEvent>
+          <Property name="caption">cookie状态</Property>
+          <Property name="name">status</Property>
+          <Property name="property">status</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="editable">false</Property>
+          <Property name="width">100</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn id="operation">
+          <Property name="name">operation</Property>
+          <Property name="supportsOptionMenu">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="align">center</Property>
+          <Property name="caption">获取Cookie</Property>
+          <Property name="property">operation</Property>
+          <Property name="width">100</Property>
+          <Editor/>
+        </DataColumn>
+      </DataGrid>
+    </Container>
+  </View>
+</ViewConfig>

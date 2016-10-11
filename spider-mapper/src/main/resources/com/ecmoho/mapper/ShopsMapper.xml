@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecmoho.mapper.ShopsMapper">
+<!-- 定义ShopResultMap -->
+	 <resultMap id="shopsResultMap" type="ShopsDTO">
+	    <id column="s_id" jdbcType="INTEGER" property="id" />
+	    <result column="shopName" jdbcType="VARCHAR" property="shopName" />
+	    <result column="s_shopCode" jdbcType="VARCHAR" property="shopCode" />
+	    <result column="cookie" jdbcType="VARCHAR" property="cookie" />
+	    <result column="sort" jdbcType="INTEGER" property="sort" />
+	    <result column="status" jdbcType="INTEGER" property="status" />
+	    <result column="s_delFlg" jdbcType="INTEGER" property="delFlg" />
+	    <result column="descript" jdbcType="VARCHAR" property="descript" />
+	    <result column="userName" jdbcType="VARCHAR" property="userName" />
+	    <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+	    <result column="wlb_red_url" jdbcType="VARCHAR" property="wlbRedUrl" />
+	  </resultMap>
+  <resultMap id="shopBusinessResultMap"  type="ShopsDTO">
+     <result column="s_shopCode" jdbcType="VARCHAR" property="shopCode" />
+     <result column="shopName" jdbcType="VARCHAR" property="shopName" />
+     <result column="userName" jdbcType="VARCHAR" property="userName" />
+	 <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+	 <result column="descript" jdbcType="VARCHAR" property="descript" />
+	 <result column="s_delFlag" jdbcType="INTEGER" property="delFlag" />
+     <collection property="businessDTOList" resultMap="com.ecmoho.mapper.BusinessMapper.businessResultMap">
+     </collection>
+  </resultMap>
+  <sql id="selectShops">
+		SELECT
+			s.shopCode s_shopCode,
+			s.shopName,
+			s.username,
+			s.pwd,
+			s.descript,
+			s.delFlag s_delFlag,
+			b.businessCode b_businessCode,
+			b.`describe` b_describe
+		FROM
+			shops s
+		LEFT JOIN shops_business_cookies sb ON sb.shopCode = s.shopCode
+		LEFT JOIN business b ON sb.businessCode = b.businessCode
+  </sql>
+  <sql id="orderShopCode">
+        ORDER BY
+			s.delFlag,s.shopCode 
+  </sql>
+  
+  <!-- 查询全部店铺 -->
+  <select id="selectAllShops" resultMap="shopBusinessResultMap">
+		<include refid="selectShops"></include>
+		<include refid="orderShopCode"></include>
+  </select>
+  <!-- 根据businessCode查询某个业务 -->
+  <select id="selectshopsById" parameterType="ShopsDTO"  resultMap="shopBusinessResultMap" >
+		<include refid="selectShops"></include>
+         <where>  
+             <if test="shopCode and shopCode !='' ">
+            	and s.shopCode=#{shopCode,jdbcType=VARCHAR}
+             </if>  
+         </where>
+         <include refid="orderShopCode"></include>
+  </select>
+  
+   <!-- 更新店铺表 -->
+  <update id="updateShopsById"  parameterType="ShopsDTO" >
+	  UPDATE 
+		 shops
+		 <set>
+		      <if test="shopName != null and shopName !='' " >
+		        shopName = #{shopName,jdbcType=VARCHAR},
+		      </if>
+		     <if test="userName != null and userName !='' " >
+		        userName = #{userName,jdbcType=VARCHAR},
+		      </if>
+		      <if test="pwd != null and pwd !='' " >
+		        pwd = #{pwd,jdbcType=VARCHAR},
+		      </if>
+		      <if test="descript != null and descript !='' " >
+		        descript = #{descript,jdbcType=VARCHAR},
+		      </if>
+		      <if test="delFlag != null " >
+		        delFlag = #{delFlag,jdbcType=INTEGER},
+		      </if>
+	    </set>
+         <where>  
+             <if test="shopCode!=null and shopCode!=''">
+            	and shopCode=#{shopCode,jdbcType=VARCHAR}
+             </if>  
+         </where>
+  </update>
+ 
+  <insert id="insertShops" parameterType="ShopsDTO">
+     INSERT INTO 
+        shops
+	    <trim prefix="(" suffix=")" suffixOverrides=","  >
+	      <if test="shopCode != null and shopCode !='' " >
+	        shopCode,
+	      </if>
+	      <if test="shopName != null and  shopName !='' " >
+	        shopName,
+	       </if>
+	       <if test="sort != null " >
+	        sort,
+	       </if>
+	         <if test="status != null " >
+	        status,
+	       </if>
+	      <if test="userName != null and userName !='' " >
+	        userName,
+	      </if>
+	      <if test="pwd != null and pwd != '' " >
+	        pwd,
+	      </if>
+	       <if test="descript != null and descript != '' " >
+	        descript,
+	      </if>
+	      <if test="delFlag != null " >
+	        delFlag,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="shopCode != null and  shopCode !=''" >
+	        #{shopCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="shopName != null and  shopName !='' " >
+	        #{shopName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort != null " >
+	        #{sort,jdbcType=VARCHAR},
+	       </if>
+	         <if test="status != null " >
+	        #{status,jdbcType=VARCHAR},
+	       </if>
+	      <if test="userName != null and userName !='' " >
+	        #{userName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="pwd != null and pwd != '' " >
+	        #{pwd,jdbcType=VARCHAR},
+	      </if>
+	       <if test="descript != null and descript != '' " >
+	        #{descript,jdbcType=DATE},
+	      </if>
+	      <if test="delFlag != null " >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+  </insert>
+ 
+</mapper>

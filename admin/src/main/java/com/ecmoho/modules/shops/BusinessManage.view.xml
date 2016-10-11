@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ViewConfig>
+  <Arguments/>
+  <Context/>
+  <Model/>
+  <View>
+    <DataSet id="businessDataSet">
+      <Property name="dataProvider">BusinessManagePR#selectAllBusiness</Property>
+    </DataSet>
+    <AjaxAction id="allshopsajaxAction">
+      <Property name="service">BusinessManagePR#selectAllShops</Property>
+    </AjaxAction>
+    <UpdateAction id="updateBusinessAction">
+      <Property name="dataResolver">BusinessManagePR#updateBusinessById</Property>
+    </UpdateAction>
+    <UpdateAction id="insertBusinessAction">
+      <Property name="dataResolver">BusinessManagePR#insertBusiness</Property>
+    </UpdateAction>
+    <Container layoutConstraint="padding:10">
+      <HtmlContainer layout="hbox">
+        <Button>
+          <ClientEvent name="onClick">var businessDataSet=view.get(&quot;#businessDataSet&quot;);&#xD;
+businessDataSet.insert();&#xD;
+var businessDialog=view.get(&quot;#businessDialog&quot;);&#xD;
+businessDialog.show();&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+</ClientEvent>
+          <Property name="caption">新增</Property>
+          <Property name="icon">url(>skin>common/icons.gif) -120px 0px</Property>
+        </Button>
+        <Button>
+          <ClientEvent name="onClick">var businessDialog=view.get(&quot;#businessDialog&quot;);&#xD;
+businessDialog.show();&#xD;
+&#xD;
+&#xD;
+&#xD;
+&#xD;
+</ClientEvent>
+          <Property name="caption">修改</Property>
+          <Property name="icon">url(>skin>common/icons.gif) -200px 0px</Property>
+        </Button>
+        <Button>
+          <ClientEvent name="onClick">var businessDataSet=view.get(&quot;#businessDataSet&quot;);&#xD;
+var entity = businessDataSet.get(&quot;data:#&quot;);&#xD;
+var updateBusinessAction=view.get(&quot;#updateBusinessAction&quot;);&#xD;
+if(entity){&#xD;
+	entity.set(&quot;updateType&quot;,&quot;delete&quot;);&#xD;
+    dorado.MessageBox.confirm(&quot;确认要删除记录吗？&quot;, function(){&#xD;
+        //entity.remove();&#xD;
+		updateBusinessAction.set(&quot;parameter&quot;,entity).execute();&#xD;
+		businessDataSet.flushAsync();&#xD;
+    })&#xD;
+}else{&#xD;
+	dorado.MessageBox.alert('请选择一条记录！');&#xD;
+}&#xD;
+</ClientEvent>
+          <Property name="caption">删除</Property>
+          <Property name="icon">url(>skin>common/icons.gif) -20px -260px</Property>
+        </Button>
+      </HtmlContainer>
+      <DataGrid id="businessDataGrid">
+        <Property name="dataSet">businessDataSet</Property>
+        <Property name="selectionMode">singleRow</Property>
+        <Property name="autoCreateColumns">true</Property>
+        <Property name="readOnly">true</Property>
+        <Property name="dynaRowHeight">true</Property>
+        <DataColumn>
+          <Property name="name">businessCode</Property>
+          <Property name="property">businessCode</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="width">100</Property>
+          <Property name="caption">业务编码</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="property">describe</Property>
+          <Property name="width">100</Property>
+          <Property name="caption">业务描述</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="name">describe</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">loginUrl</Property>
+          <Property name="property">loginUrl</Property>
+          <Property name="width">200</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">登录URL</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">cookieUrl</Property>
+          <Property name="property">cookieUrl</Property>
+          <Property name="width">200</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">cookieUrl</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <Property name="name">seleniumSpiderBean</Property>
+          <Property name="property">seleniumSpiderBean</Property>
+          <Property name="width">100</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Property name="caption">登录Bean</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <ClientEvent name="onRenderCell">if(arg.data.get(&quot;delFlag&quot;)==0){&#xD;
+	arg.dom.innerText=&quot;否&quot;;&#xD;
+}else{&#xD;
+	arg.dom.innerText=&quot;是&quot;;&#xD;
+}&#xD;
+</ClientEvent>
+          <Property name="caption">是否过期</Property>
+          <Property name="name">delFlag</Property>
+          <Property name="property">delFlag</Property>
+          <Property name="width">60</Property>
+          <Property name="editable">false</Property>
+          <Property name="readOnly">true</Property>
+          <Editor/>
+        </DataColumn>
+        <DataColumn>
+          <ClientEvent name="onRenderCell">var text=&quot;&quot;;&#xD;
+var shopsDTOList=arg.data.get(&quot;shopsDTOList&quot;)&#xD;
+if(shopsDTOList&amp;&amp;shopsDTOList.length>0){&#xD;
+	$.each(shopsDTOList,function(i,item){&#xD;
+		text+=item.shopName+&quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&quot;;&#xD;
+	});&#xD;
+}&#xD;
+arg.dom.innerHTML=text;&#xD;
+</ClientEvent>
+          <Property name="name">shops</Property>
+          <Property name="property">shops</Property>
+          <Property name="caption">店铺</Property>
+          <Property name="editable">false</Property>
+          <Property name="editorType">TextArea</Property>
+          <Property name="wrappable">true</Property>
+          <Property name="readOnly">true</Property>
+          <Editor/>
+        </DataColumn>
+      </DataGrid>
+      <CustomDropDown id="businesscustomDropDown">
+        <ClientEvent name="onClose">var container=view.get(&quot;#businesscontainer&quot;);&#xD;
+var children=container.get(&quot;children&quot;);&#xD;
+var text=&quot;&quot;;&#xD;
+$.each(children,function(i,child){&#xD;
+	var checkedboxId=child.get(&quot;id&quot;);&#xD;
+&#xD;
+	if(child.get(&quot;checked&quot;)&amp;&amp;checkedboxId!=&quot;shopcheckboxAll&quot;){&#xD;
+		if (text == &quot;&quot;) {&#xD;
+			text = text + child.get(&quot;caption&quot;);&#xD;
+		} else {&#xD;
+			text = text + &quot;、&quot; + child.get(&quot;caption&quot;);&#xD;
+		}&#xD;
+	}&#xD;
+});&#xD;
+view.get(&quot;#shoptextEditor&quot;).set(&quot;text&quot;,text);</ClientEvent>
+        <Property name="height">150</Property>
+        <Property name="maxWidth">280</Property>
+        <Container id="businesscontainer"/>
+      </CustomDropDown>
+      <Dialog id="businessDialog">
+        <ClientEvent name="onShow">var businessAddAutoForm=view.get(&quot;#businessAddAutoForm&quot;);&#xD;
+var businessDataSet=view.get(&quot;#businessDataSet&quot;);&#xD;
+	&#xD;
+	//修改时设置选中&#xD;
+	var shopsDTOList=businessDataSet.get(&quot;data.current&quot;).get(&quot;shopsDTOList&quot;);&#xD;
+	//设置shop是否可编辑&#xD;
+	businessAddAutoForm.set(&quot;#businessCode.editable&quot;,shopsDTOList?false:true);&#xD;
+	businessAddAutoForm.set(&quot;#businessCode.readOnly&quot;,shopsDTOList?true:false);&#xD;
+	var shopsCodeArr=[];&#xD;
+	&#xD;
+	if(shopsDTOList){&#xD;
+		var text=&quot;&quot;;&#xD;
+		$.each(shopsDTOList,function(i,item){&#xD;
+			shopsCodeArr.push(item.shopCode);&#xD;
+			if (text == &quot;&quot;) {&#xD;
+				text = text + item.shopName;&#xD;
+			} else {&#xD;
+				text = text + &quot;、&quot; + item.shopName;&#xD;
+			}&#xD;
+        });&#xD;
+		view.get(&quot;#shoptextEditor&quot;).set(&quot;text&quot;,text);&#xD;
+	}&#xD;
+&#xD;
+    //生成下拉列表&#xD;
+	var allshopsajaxAction=view.get(&quot;#allshopsajaxAction&quot;);&#xD;
+	var businesscontainer=view.get(&quot;#businesscontainer&quot;);&#xD;
+	var children=businesscontainer.get(&quot;children&quot;);&#xD;
+	if(children&amp;&amp;children.length>0){&#xD;
+		if(shopsDTOList){&#xD;
+			$.each(shopsDTOList,function(i,item){&#xD;
+				view.get(&quot;#shopcheckbox&quot;+item.shopCode).set(&quot;checked&quot;,true);&#xD;
+	        });&#xD;
+	    }&#xD;
+	}else{&#xD;
+		allshopsajaxAction.execute(function(data){&#xD;
+			var a=[{&#xD;
+				&quot;$type&quot;:&quot;CheckBox&quot;,&#xD;
+				&quot;id&quot;:&quot;shopcheckboxAll&quot;,&#xD;
+				&quot;height&quot;:&quot;25&quot;,&#xD;
+				&quot;tags&quot;:&quot;checkBox3&quot;,&#xD;
+				&quot;caption&quot;:&quot;全选/全不选&quot;,&#xD;
+				&quot;listener&quot;:{&#xD;
+					&quot;onValueChange&quot;:function(self,arg){&#xD;
+							var text=&quot;&quot;;&#xD;
+							$.each(children,function(i,child){&#xD;
+								if(self.get(&quot;checked&quot;)){&#xD;
+									child.set(&quot;checked&quot;,true);&#xD;
+								}else{&#xD;
+									child.set(&quot;checked&quot;,false);&#xD;
+								}&#xD;
+							});&#xD;
+						&#xD;
+					}&#xD;
+				}&#xD;
+			}];&#xD;
+			&#xD;
+			$.each(data,function(i,item){&#xD;
+				var o={&#xD;
+				&quot;$type&quot;:&quot;CheckBox&quot;,&#xD;
+				&quot;id&quot;:&quot;shopcheckbox&quot;+item.shopCode,&#xD;
+				&quot;height&quot;:&quot;25&quot;,&#xD;
+				&quot;tags&quot;:&quot;checkBox3&quot;,&#xD;
+				&quot;caption&quot;:item.shopName,&#xD;
+				&quot;checked&quot;:$.inArray(item.shopCode,shopsCodeArr)==-1?false:true&#xD;
+			    }&#xD;
+				a.push(o);&#xD;
+			});&#xD;
+			&#xD;
+			businesscontainer.set(&quot;children&quot;,a);&#xD;
+		});&#xD;
+	}&#xD;
+&#xD;
+	&#xD;
+&#xD;
+&#xD;
+	&#xD;
+	&#xD;
+</ClientEvent>
+        <Property name="height">300</Property>
+        <Property name="resizeable">false</Property>
+        <Property name="width">1000</Property>
+        <Property name="caption">业务详情</Property>
+        <Property name="showCaptionBar">true</Property>
+        <Property name="draggable">false</Property>
+        <Property name="closeable">false</Property>
+        <Buttons>
+          <Button>
+            <ClientEvent name="onClick">&#xD;
+var businessDialog=view.get(&quot;#businessDialog&quot;);&#xD;
+var container=view.get(&quot;#businesscontainer&quot;);&#xD;
+var children=container.get(&quot;children&quot;);&#xD;
+var businessArr=[];&#xD;
+$.each(children,function(i,child){&#xD;
+	var checkedboxId=child.get(&quot;id&quot;);&#xD;
+	console.log(checkedboxId);&#xD;
+	if(child.get(&quot;checked&quot;)&amp;&amp;checkedboxId!=&quot;shopcheckboxAll&quot;){&#xD;
+		businessArr.push(checkedboxId.slice(12,checkedboxId.length));&#xD;
+	}&#xD;
+});&#xD;
+$.each(children,function(i,child){&#xD;
+    child.set('checked',false);&#xD;
+});&#xD;
+&#xD;
+&#xD;
+var businessAddAutoForm=view.get(&quot;#businessAddAutoForm&quot;);&#xD;
+var entity = businessAddAutoForm.get(&quot;entity&quot;);&#xD;
+entity.set(&quot;shopArr&quot;,businessArr.join(&quot;,&quot;));&#xD;
+&#xD;
+//&#xD;
+if(!entity.get(&quot;businessCode&quot;)){&#xD;
+	dorado.MessageBox.alert('请填写业务编码！');&#xD;
+	return;&#xD;
+}&#xD;
+if(!entity.get(&quot;describe&quot;)){&#xD;
+	dorado.MessageBox.alert('请填写业务描述！');&#xD;
+	return;&#xD;
+}&#xD;
+if(!entity.get(&quot;loginUrl&quot;)){&#xD;
+	dorado.MessageBox.alert('请填写登录Url！');&#xD;
+	return;&#xD;
+}&#xD;
+if(!entity.get(&quot;cookieUrl&quot;)){&#xD;
+	dorado.MessageBox.alert('请填写cookieUrl！');&#xD;
+	return;&#xD;
+}&#xD;
+&#xD;
+ if(!entity.get(&quot;seleniumSpiderBean&quot;)){&#xD;
+	dorado.MessageBox.alert('请填写登录Bean！');&#xD;
+	return;&#xD;
+}&#xD;
+&#xD;
+dorado.MessageBox.confirm(&quot;确认要提交吗？&quot;, function(){&#xD;
+	//判断是新增还是修改&#xD;
+	//新增&#xD;
+	if(businessAddAutoForm.get(&quot;#businessCode.editable&quot;)){&#xD;
+		var insertBusinessAction=view.get(&quot;#insertBusinessAction&quot;);&#xD;
+		insertBusinessAction.set(&quot;parameter&quot;,entity).execute(function(){&#xD;
+		    businessDialog.hide();&#xD;
+			view.get(&quot;#shoptextEditor&quot;).set(&quot;text&quot;,&quot;&quot;);&#xD;
+			view.get(&quot;#businessDataSet&quot;).flushAsync();&#xD;
+	    })&#xD;
+	}else{//修改&#xD;
+		var updateBusinessAction=view.get(&quot;#updateBusinessAction&quot;);&#xD;
+	    entity.set(&quot;updateType&quot;,&quot;update&quot;);&#xD;
+        updateBusinessAction.set(&quot;parameter&quot;,entity).execute(function(){&#xD;
+		    businessDialog.hide();&#xD;
+			view.get(&quot;#shoptextEditor&quot;).set(&quot;text&quot;,&quot;&quot;);&#xD;
+			view.get(&quot;#businessDataSet&quot;).flushAsync();&#xD;
+	    })&#xD;
+	};&#xD;
+});&#xD;
+&#xD;
+&#xD;
+</ClientEvent>
+            <Property name="caption">提交</Property>
+            <Property name="icon">url(>skin>common/icons.gif) -140px -20px</Property>
+          </Button>
+          <Button>
+            <ClientEvent name="onClick">var businessDataSet=view.get(&quot;#businessDataSet&quot;);&#xD;
+businessDataSet.get(&quot;data:#&quot;).cancel();&#xD;
+view.get(&quot;#shoptextEditor&quot;).set(&quot;text&quot;,&quot;&quot;);&#xD;
+var container=view.get(&quot;#businesscontainer&quot;);&#xD;
+var children=container.get(&quot;children&quot;);&#xD;
+$.each(children,function(i,child){&#xD;
+    child.set('checked',false);&#xD;
+});&#xD;
+var businessDialog=view.get(&quot;#businessDialog&quot;);&#xD;
+businessDialog.hide();&#xD;
+&#xD;
+	</ClientEvent>
+            <Property name="caption">取消</Property>
+            <Property name="icon">url(>skin>common/icons.gif) -280px -220px</Property>
+          </Button>
+        </Buttons>
+        <Children>
+          <Container>
+            <AutoForm id="businessAddAutoForm">
+              <Property name="cols">480,*</Property>
+              <Property name="labelSeparator">:</Property>
+              <Property name="createPrivateDataSet">true</Property>
+              <Property name="dataSet">businessDataSet</Property>
+              <AutoFormElement>
+                <ClientEvent name="onBlur">var value=self.get(&quot;value&quot;);&#xD;
+var businessDataSet=view.get(&quot;#businessDataSet&quot;);&#xD;
+var businessJsonData=businessDataSet.get(&quot;data&quot;).toJSON();&#xD;
+&#xD;
+var a=[];&#xD;
+$.each(businessJsonData.slice(0,businessJsonData.length-1),function(i,item){&#xD;
+	 var businessCode=item.businessCode;&#xD;
+	 a.push(businessCode);&#xD;
+});&#xD;
+if($.inArray(value, a)!=-1){&#xD;
+	self.setFocus(); &#xD;
+	dorado.MessageBox.alert(&quot;店铺编码已存在！&quot;);&#xD;
+}; &#xD;
+&#xD;
+&#xD;
+&#xD;
+	</ClientEvent>
+                <Property name="label">业务编码</Property>
+                <Property name="name">businessCode</Property>
+                <Property name="editable">true</Property>
+                <Property name="readOnly">false</Property>
+                <Editor/>
+              </AutoFormElement>
+              <AutoFormElement>
+                <Property name="name">describe</Property>
+                <Property name="label">业务描述</Property>
+                <Editor/>
+              </AutoFormElement>
+              <AutoFormElement>
+                <Property name="name">loginUrl</Property>
+                <Property name="label">登录URL</Property>
+                <Editor/>
+              </AutoFormElement>
+              <AutoFormElement>
+                <Property name="label">cookieUrl</Property>
+                <Property name="name">cookieUrl</Property>
+                <Editor/>
+              </AutoFormElement>
+              <AutoFormElement>
+                <Property name="name">seleniumSpiderBean</Property>
+                <Property name="editable">true</Property>
+                <Property name="readOnly">false</Property>
+                <Property name="label">登录Bean</Property>
+                <Editor/>
+              </AutoFormElement>
+              <AutoFormElement layoutConstraint="colSpan:2">
+                <Property name="label">店铺</Property>
+                <Property name="editable">false</Property>
+                <Editor>
+                  <TextEditor id="shoptextEditor">
+                    <Property name="trigger">businesscustomDropDown</Property>
+                    <Property name="blankText">请选择店铺</Property>
+                  </TextEditor>
+                </Editor>
+              </AutoFormElement>
+            </AutoForm>
+          </Container>
+        </Children>
+        <Tools/>
+      </Dialog>
+    </Container>
+  </View>
+</ViewConfig>

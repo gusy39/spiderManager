@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecmoho.mapper.BusinessMapper">
+  <!-- 定义BusinessResultMap -->
+  <resultMap id="businessResultMap" type="BusinessDTO">
+    <id column="b_id" jdbcType="INTEGER" property="id" />
+    <result column="b_businessCode" jdbcType="VARCHAR" property="businessCode" />
+    <result column="b_describe" jdbcType="VARCHAR" property="describe" />
+    <result column="loginUrl" jdbcType="VARCHAR" property="loginUrl" />
+    <result column="cookieUrl" jdbcType="VARCHAR" property="cookieUrl" />
+    <result column="seleniumSpiderBean" jdbcType="VARCHAR" property="seleniumSpiderBean" />
+    <result column="b_delFlag" jdbcType="INTEGER" property="delFlag" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="b_created" jdbcType="TIMESTAMP" property="created" />
+  </resultMap>
+  
+
+  <sql id="selectBusiness">
+		SELECT
+			b.businessCode b_businessCode,
+			b.`describe` b_describe,
+			b.loginUrl,
+			b.cookieUrl,
+			b.seleniumSpiderBean,
+			b.delFlag b_delFlag,
+			b.modified,
+			b.created b_created,
+			s.shopName,
+			s.shopCode s_shopCode
+		FROM
+			business b
+		LEFT JOIN shops_business_cookies sb ON sb.businessCode = b.businessCode
+		LEFT JOIN shops s ON sb.shopCode = s.shopCode
+		
+  </sql>
+   <sql id="orderBusinessCode">
+        ORDER BY
+			b.delFlag,b.businessCode
+  </sql>
+  <resultMap id="businessShopResultMap"  type="BusinessDTO">
+     <result column="b_businessCode" jdbcType="VARCHAR" property="businessCode" />
+     <result column="b_describe" jdbcType="VARCHAR" property="describe" />
+     <result column="loginUrl" jdbcType="VARCHAR" property="loginUrl" />
+     <result column="cookieUrl" jdbcType="VARCHAR" property="cookieUrl" />
+     <result column="seleniumSpiderBean" jdbcType="VARCHAR" property="seleniumSpiderBean" />
+     <result column="b_delFlag" jdbcType="INTEGER" property="delFlag" />
+     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+     <result column="b_created" jdbcType="TIMESTAMP" property="created" />
+     <collection property="shopsDTOList" resultMap="com.ecmoho.mapper.ShopsMapper.shopsResultMap">
+     </collection>
+  </resultMap>
+  <!-- 查询全部业务 -->
+  <select id="selectAllBusiness" resultMap="businessShopResultMap" >
+      <include refid="selectBusiness"></include>
+      <include refid="orderBusinessCode"></include>
+  </select>
+  <!-- 根据businessCode查询某个业务 -->
+  <select id="selectBusinessById" parameterType="BusinessDTO"  resultMap="businessShopResultMap" >
+		 <include refid="selectBusiness"></include>
+         <where>  
+             <if test="businessCode!=null and businessCode !='' ">
+            	and b.businessCode=#{businessCode,jdbcType=VARCHAR}
+             </if>  
+         </where>
+         <include refid="orderBusinessCode"></include>
+  </select>
+  
+   <!-- 更新业务表 -->
+  <update id="updateBusinessById"  parameterType="BusinessDTO" >
+		UPDATE business
+		 <set >
+		      <if test="describe != null and describe !='' " >
+		        `describe` = #{describe,jdbcType=VARCHAR},
+		      </if>
+		     <if test="loginUrl != null and loginUrl !='' " >
+		        loginUrl = #{loginUrl,jdbcType=VARCHAR},
+		      </if>
+		      <if test="cookieUrl != null and cookieUrl !='' " >
+		        cookieUrl = #{cookieUrl,jdbcType=VARCHAR},
+		      </if>
+		      <if test="delFlag != null " >
+		        delFlag = #{delFlag,jdbcType=VARCHAR},
+		      </if>
+		      <if test="seleniumSpiderBean != null and seleniumSpiderBean !='' " >
+		        seleniumSpiderBean = #{seleniumSpiderBean,jdbcType=VARCHAR},
+		      </if>
+		      <if test="modified != null" >
+	            modified = #{modified,jdbcType=TIMESTAMP},
+	          </if>
+	    </set>
+         <where>  
+             <if test="businessCode!=null and businessCode!=''">
+            	and businessCode=#{businessCode,jdbcType=VARCHAR}
+             </if>  
+         </where>
+  </update>
+  <insert id="insertBusiness" parameterType="BusinessDTO">
+     INSERT INTO 
+        business
+	    <trim prefix="(" suffix=")" suffixOverrides=","  >
+	      <if test="businessCode != null and businessCode !='' " >
+	        businessCode,
+	      </if>
+	      <if test="describe != null and  describe !='' " >
+	        `describe`,
+	      </if>
+	      <if test="loginUrl != null and loginUrl !='' " >
+	        loginUrl,
+	      </if>
+	      <if test="cookieUrl != null and cookieUrl != '' " >
+	        cookieUrl,
+	      </if>
+	      <if test="modified != null and modified != '' " >
+	        modified,
+	      </if>
+	       <if test="created != null and created != '' " >
+	        created,
+	      </if>
+	      <if test="delFlag != null " >
+	        delFlag,
+	      </if>
+	      <if test="seleniumSpiderBean != null and seleniumSpiderBean != '' " >
+	        seleniumSpiderBean,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="businessCode != null" >
+	        #{businessCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="describe != null and  describe !='' " >
+	        #{describe,jdbcType=VARCHAR},
+	      </if>
+	      <if test="loginUrl != null and loginUrl !='' " >
+	        #{loginUrl,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cookieUrl != null and cookieUrl != '' " >
+	        #{cookieUrl,jdbcType=VARCHAR},
+	      </if>
+	      <if test="modified != null" >
+	        #{modified,jdbcType=TIMESTAMP},
+	      </if>
+	       <if test="created != null " >
+	        #{created,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="delFlag != null " >
+	        #{delFlag,jdbcType=INTEGER},
+	      </if>
+	      <if test="seleniumSpiderBean != null and seleniumSpiderBean != '' " >
+	        #{seleniumSpiderBean,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  </insert>
+</mapper>

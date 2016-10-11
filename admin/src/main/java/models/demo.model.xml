@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Model>
+  <DataType name="Reimbursement">
+    <Property name="creationType">com.ecmoho.entity.Reimbursement</Property>
+    <PropertyDef name="id">
+      <Property></Property>
+      <Property name="label">报销申请状态</Property>
+    </PropertyDef>
+    <PropertyDef name="name">
+      <Property></Property>
+      <Property name="label">报销名称</Property>
+    </PropertyDef>
+    <PropertyDef name="money">
+      <Property name="dataType">Integer</Property>
+      <Property name="label">报销金额</Property>
+    </PropertyDef>
+    <PropertyDef name="remark">
+      <Property></Property>
+      <Property name="label">备注</Property>
+    </PropertyDef>
+    <PropertyDef name="createDate">
+      <Property name="dataType">Date</Property>
+      <Property name="label">申请时间</Property>
+    </PropertyDef>
+    <PropertyDef name="userName">
+      <Property></Property>
+      <Property name="label">报销人</Property>
+    </PropertyDef>
+    <PropertyDef name="processInstanceId">
+      <Property name="dataType">Long</Property>
+      <Property name="label">报销流程实例ID</Property>
+    </PropertyDef>
+  </DataType>
+</Model>

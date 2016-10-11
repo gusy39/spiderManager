@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ecmoho.mapper.CookiesMapper" >
+  <resultMap id="BaseResultMap" type="CookiesDTO" >
+    <id column="c_id" property="id" jdbcType="INTEGER" />
+    <result column="c_shopCode" property="shopCode" jdbcType="VARCHAR" />
+    <result column="c_businessCode" property="businessCode" jdbcType="VARCHAR" />
+    <result column="c_status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="CookiesDTO" extends="BaseResultMap" >
+    <result column="cookie" property="cookie" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, shopCode, businessCode, status
+  </sql>
+  <sql id="Blob_Column_List" >
+    cookie
+  </sql>
+  <select id="selectAllCookies" resultType="CookiesDTO">
+     SELECT
+		s.shopCode,
+		s.shopName,
+		s.userName,
+		b.businessCode,
+		b.`describe`,
+		sb.cookie,
+		b.cookieUrl,
+		sb.status
+	FROM
+		shops s,
+		shops_business_cookies sb,
+		business b
+	WHERE
+		sb.shopCode = s.shopCode
+	AND sb.businessCode = b.businessCode
+	ORDER BY
+		s.shopCode
+  </select>
+  <select id="selectCookiesBySBCodes" resultType="CookiesDTO" parameterType="java.util.Map" >
+    SELECT SBC.shopCode,SBC.businessCode,S.userName,S.pwd,B.loginUrl,B.cookieUrl,B.seleniumSpiderBean
+    ,SBC.failTime,SBC.lastTime,SBC.status,SBC.cookie
+    FROM shops_business_cookies SBC
+    LEFT JOIN shops S ON S.shopCode = SBC.shopCode
+    LEFT JOIN business B ON B.businessCode = SBC.businessCode
+    WHERE SBC.`status`='0'
+    <if test='type == "1"'>
+      AND CONCAT(SBC.shopCode, '_', SBC.businessCode) in (${SBCodesSql})
+    </if>
+    <if test='type == "2"'>
+      AND SBC.shopCode in (${SBCodesSql})
+    </if>
+    <if test='type == "3"'>
+      AND SBC.businessCode in (${SBCodesSql})
+    </if>
+  </select>
+
+  <select id="selectCookies" resultType="CookiesDTO" parameterType="java.util.Map" >
+	    SELECT SBC.shopCode,SBC.businessCode,S.userName,S.pwd,B.loginUrl,B.cookieUrl,B.seleniumSpiderBean
+	    ,SBC.failTime,SBC.lastTime,SBC.status,SBC.cookie
+	    FROM shops_business_cookies SBC
+	    LEFT JOIN shops S ON S.shopCode = SBC.shopCode
+	    LEFT JOIN business B ON B.businessCode = SBC.businessCode
+	    <where>
+		    <if test='type == "1"'>
+		      AND CONCAT(SBC.shopCode, '_', SBC.businessCode) in (${SBCodesSql})
+		    </if>
+		    <if test='type == "2"'>
+		      AND SBC.shopCode in (${SBCodesSql})
+		    </if>
+		    <if test='type == "3"'>
+		      AND SBC.businessCode in (${SBCodesSql})
+		    </if>
+	    </where>
+	   
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from shops_business_cookies
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shops_business_cookies
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByShopCodeBusiness" parameterType="java.util.Map" >
+  	  delete from shops_business_cookies
+	    <where>
+	         <if test="shopCode!= null and shopCode != '' ">
+	             and shopCode = #{shopCode,jdbcType=VARCHAR}
+	         </if>
+	         <if test="businessCode!= null and businessCode != '' ">
+	             and businessCode = #{businessCode,jdbcType=VARCHAR}
+	         </if>
+	    </where>
+  </delete>
+  <insert id="insert" parameterType="CookiesDTO" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into shops_business_cookies (shopCode, businessCode, status,
+      cookie)
+    values (#{shopCode,jdbcType=VARCHAR}, #{businessCode,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+      #{cookie,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="CookiesDTO" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into shops_business_cookies
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shopCode != null" >
+        shopCode,
+      </if>
+      <if test="businessCode != null" >
+        businessCode,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="cookie != null" >
+        cookie,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shopCode != null" >
+        #{shopCode,jdbcType=VARCHAR},
+      </if>
+      <if test="businessCode != null" >
+        #{businessCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="cookie != null" >
+        #{cookie,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="CookiesDTO" >
+    update shops_business_cookies
+    <set >
+      <if test="shopCode != null" >
+        shopCode = #{shopCode,jdbcType=VARCHAR},
+      </if>
+      <if test="businessCode != null" >
+        businessCode = #{businessCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="cookie != null" >
+        cookie = #{cookie,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="CookiesDTO" >
+    update shops_business_cookies
+    set shopCode = #{shopCode,jdbcType=VARCHAR},
+      businessCode = #{businessCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      cookie = #{cookie,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="CookiesDTO" >
+    update shops_business_cookies
+    set shopCode = #{shopCode,jdbcType=VARCHAR},
+      businessCode = #{businessCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateBySBCode" parameterType="CookiesDTO" >
+    update shops_business_cookies
+    set cookie = #{cookie,jdbcType=LONGVARCHAR},
+    status = #{status,jdbcType=INTEGER}
+    where shopCode = #{shopCode,jdbcType=VARCHAR} AND businessCode = #{businessCode,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateStatusBySBCode" parameterType="CookiesDTO" >
+    update shops_business_cookies
+    <set >
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="failTime != null " >
+        failTime = #{failTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastTime != null" >
+        lastTime = #{lastTime,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where shopCode = #{shopCode,jdbcType=VARCHAR} AND businessCode = #{businessCode,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

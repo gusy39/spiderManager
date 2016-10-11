@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <context id="MysqlTables" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--生成对象工具路径-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.2.150:3308/wlb2?characterEncoding=utf-8"
+                        userId="root" password="">
+        </jdbcConnection>
+
+        <!--<jdbcConnection driverClass="org.postgresql.Driver"-->
+        <!--connectionURL="jdbc:postgresql://121.40.32.22:443/yiheng_erp?characterEncoding=utf-8"-->
+        <!--userId="postgres" password="root">-->
+        <!--</jdbcConnection>-->
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+
+        <javaModelGenerator targetPackage="com.ecmoho.models" targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="com.ecmoho.mapper" targetProject="src\main\resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.ecmoho.mapper" targetProject="src\main\java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="rootInterface" value="com.ecmoho.common.persistent.BaseMapper"/>
+        </javaClientGenerator>
+
+        <table schema="wlb2" tableName="business" domainObjectName="Business" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true" selectByPrimaryKeyQueryId="">
+            <property name="useActualColumnNames" value="false"/>
+            <property name="rootClass" value="com.ecmoho.common.dto.BaseDTO"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"></generatedKey>
+            <columnOverride column="id" property="id"></columnOverride>
+        </table>
+
+        <table schema="wlb2" tableName="shops" domainObjectName="Shops" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true" selectByPrimaryKeyQueryId="">
+            <property name="useActualColumnNames" value="false"/>
+            <property name="rootClass" value="com.ecmoho.common.dto.BaseDTO"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"></generatedKey>
+            <columnOverride column="id" property="id"></columnOverride>
+        </table>
+
+        <table schema="wlb2" tableName="shops_business_cookies" domainObjectName="Cookies" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="true" enableSelectByPrimaryKey="true" selectByPrimaryKeyQueryId="">
+            <property name="useActualColumnNames" value="false"/>
+            <property name="rootClass" value="com.ecmoho.common.dto.BaseDTO"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"></generatedKey>
+            <columnOverride column="id" property="id"></columnOverride>
+        </table>
+
+    </context>
+
+</generatorConfiguration>
